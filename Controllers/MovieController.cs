@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using Dapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SinglePageApp.Models;
@@ -54,6 +55,31 @@ namespace SinglePageApp.Controllers
             MovieRepository movieRepository = new MovieRepository();
             IList<MovieModel> movies = movieRepository.GetMovieById(id).Result;
             return movies;
+        }
+
+        //// POST api/values
+        //[HttpPost]
+        //public void Post(MovieModel model)
+        //{
+        //    DynamicParameters param = new DynamicParameters();
+        //    param.Add("@MovieName", model.MovieName);
+        //    param.Add("@Actor", model.Actor);
+        //    param.Add("@Director", model.Director);
+        //    param.Add("@Producer", model.Producer);
+        //    param.Add("@DOR", model.DOR);
+        //    MovieRepository movieRepository = new MovieRepository();
+        //    movieRepository.AddMovies("AddMovie", param);
+        //}
+
+        // DELETE api/values/5
+        [HttpDelete("{id}")]
+        [Route("Delete")]
+        public bool Delete(int id)
+        {
+            MovieRepository movieRepository = new MovieRepository();
+            movieRepository.DeleteById(id);
+            return true;
+
         }
     }
 }

@@ -62,5 +62,37 @@ namespace SinglePageApp.Repository
                 return moveDetails.AsList();
             }
         }
+
+        //public void AddMovies(string procedureName, DynamicParameters param)
+        //{
+        //    using (SqlConnection conn = new SqlConnection("Data Source=ADMIN-PC\\SQLEXPRESS;Initial Catalog=MovieInfo;Integrated Security=True"))
+        //    {
+        //        conn.Open();
+        //        conn.Execute(procedureName, param, commandType: CommandType.StoredProcedure);
+        //        conn.Close();
+        //    }
+        //}
+
+        public bool InserteMovie(MovieModel model)
+        {
+            using (var connection = new SqlConnection("Data Source=ADMIN-PC\\SQLEXPRESS;Initial Catalog=MovieInfo;Integrated Security=True"))
+            {
+                int rowsAffected = connection.Execute("AddMovie", new {model.MovieName,model.Actor,model.Director,model.Producer}, commandType: CommandType.StoredProcedure);
+                if (rowsAffected > 0)
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        public async void DeleteById(int id)
+        {
+            using (var connection = new SqlConnection("Data Source=ADMIN-PC\\SQLEXPRESS;Initial Catalog=MovieInfo;Integrated Security=True"))
+            {
+                var moveDetails = await connection.QueryAsync<MovieModel>("deleteMovie", id, commandType: CommandType.StoredProcedure).ConfigureAwait(false);
+                connection.Close();               
+            }
+        }
     }
 }
