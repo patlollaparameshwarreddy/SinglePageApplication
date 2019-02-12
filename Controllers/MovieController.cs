@@ -1,22 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Threading.Tasks;
-using Dapper;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using SinglePageApp.Models;
-using SinglePageApp.Repository;
-
+﻿//-----------------------------------------------------------------------
+// <copyright file="MovieController.cs" company="CompanyName">
+//     Company copyright tag.
+// </copyright>
+//-----------------------------------------------------------------------
 namespace SinglePageApp.Controllers
 {
+    using System.Collections.Generic;
+    using Microsoft.AspNetCore.Mvc;
+    using SinglePageApp.Models;
+    using SinglePageApp.Repository;
+
+    /// <summary>
+    /// this class is used as controller class
+    /// </summary>
+    /// <seealso cref="Microsoft.AspNetCore.Mvc.ControllerBase" />
     [Route("api/[controller]")]
     [ApiController]
     public class MovieController : ControllerBase
     {
-        [Route("AllMovies")]
+        /// <summary>
+        /// Gets the movies.
+        /// </summary>
+        /// <returns>the list of movies</returns>
+       [Route("AllMovies")]
         public IList<MovieModel> GetMovies()
         {
             MovieRepository movieRepository = new MovieRepository();
@@ -24,54 +30,50 @@ namespace SinglePageApp.Controllers
             return movies;
         }
 
-        [Route("Actors")]
-        public IList<PersonTypeModel> GetActors()
+        /// <summary>
+        /// Gets the actors.
+        /// </summary>
+        /// <returns>the list of actors</returns>
+        [Route("person/{type}")]
+        public IList<PersonTypeModel> GetActors(string type)
         {
             MovieRepository movieRepository = new MovieRepository();
-            IList<PersonTypeModel> Actors = movieRepository.GetActors().Result;
-            return Actors;
+            IList<PersonTypeModel> actors = movieRepository.GetActors(type).Result;
+            return actors;
         }
 
-        [Route("Directors")]
-        public IList<PersonTypeModel> GetDirectors()
-        {
-            MovieRepository movieRepository = new MovieRepository();
-            IList<PersonTypeModel> Directors = movieRepository.GetDirectors().Result;
-            return Directors;
-        }
-
-        [Route("Producers")]
-        public IList<PersonTypeModel> GetProducer()
-        {
-            MovieRepository movieRepository = new MovieRepository();
-            IList<PersonTypeModel> Producer = movieRepository.GetProducer().Result;
-            return Producer;
-        }
-
-        // GET api/values/5
+        /// <summary>
+        /// Gets the movies by identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns>list of movie by id</returns>
         [HttpGet("{id}")]
-        public IList<MovieModel> GetMovies(int id)
+        
+        public IList<MovieModel> GetMoviesById(int id)
         {
             MovieRepository movieRepository = new MovieRepository();
             IList<MovieModel> movies = movieRepository.GetMovieById(id).Result;
             return movies;
         }
 
-        //// POST api/values
-        //[HttpPost]
-        //public void Post(MovieModel model)
-        //{
-        //    DynamicParameters param = new DynamicParameters();
-        //    param.Add("@MovieName", model.MovieName);
-        //    param.Add("@Actor", model.Actor);
-        //    param.Add("@Director", model.Director);
-        //    param.Add("@Producer", model.Producer);
-        //    param.Add("@DOR", model.DOR);
-        //    MovieRepository movieRepository = new MovieRepository();
-        //    movieRepository.AddMovies("AddMovie", param);
-        //}
+        /// <summary>
+        /// Adds the movie.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns>the response</returns>
+        [HttpPost]
+        public ActionResult AddMovie(MovieModel model)
+        {
+            MovieRepository movieRepository = new MovieRepository();
+            bool response = movieRepository.InserteMovie(model);
+            return this.Ok(response);
+        }
 
-        // DELETE api/values/5
+        /// <summary>
+        /// Deletes the specified identifier.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns>the boolean</returns>
         [HttpDelete("{id}")]
         [Route("Delete")]
         public bool Delete(int id)
@@ -79,7 +81,21 @@ namespace SinglePageApp.Controllers
             MovieRepository movieRepository = new MovieRepository();
             movieRepository.DeleteById(id);
             return true;
+        }
 
+        /// <summary>
+        /// Updates the movie.
+        /// </summary>
+        /// <param name="model">The model.</param>
+        /// <returns>
+        /// the boolean
+        /// </returns>
+        [Route("Update")]
+        public ActionResult UpdateMovie(MovieModel model)
+        {
+            MovieRepository movieRepository = new MovieRepository();
+            bool response = movieRepository.UpdateMovie(model);
+            return this.Ok(response);
         }
     }
 }
